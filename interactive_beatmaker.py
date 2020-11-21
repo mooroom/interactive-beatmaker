@@ -122,8 +122,9 @@ class sample(object):
 #############
 #버튼 생성 파트#
 
-#버튼 딕셔너리에 생성한 버튼들을 넣어두고 gameloop이 돌때 꺼내 씀
+#각종 버튼 딕셔너리(생성한 버튼들을 넣어두고 gameloop이 돌때 꺼내 씀)
 button_dict = {}
+#시퀀서 돌때 버튼을 highlight해주는 버튼 딕셔너리
 border_dict = {}
 
 #악기별 버튼 번호 튜플로 초기화
