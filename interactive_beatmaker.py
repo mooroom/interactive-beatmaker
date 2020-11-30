@@ -28,7 +28,7 @@ yellow = Color('#FEFF00')
 bg = Color('#161616')
 bg_sub = Color('#282828')
 
-screen = pygame.display.set_mode((1187, 1000))
+screen = pygame.display.set_mode((1300, 800))
 clock = pygame.time.Clock()
 
 
@@ -128,42 +128,55 @@ button_dict = {}
 border_dict = {}
 
 #악기별 버튼 번호 튜플로 초기화
-inst1 = (0, 4, 8, 12, 16, 20, 24, 28)
-inst2 = (1, 5, 9, 13, 17, 21, 25, 29)
-inst3 = (2, 6, 10, 14, 18, 22, 26, 30)
-inst4 = (3, 7, 11, 15, 19, 23, 27, 31)
+def make_inst_tuple(n):
+    inst = (n, n+6, n+12, n+18, n+24, n+30, n+36, n+42, n+48, n+54, n+60, n+66, n+72, n+78, n+84, n+90)
+    return inst
+
+inst1 = make_inst_tuple(0)
+inst2 = make_inst_tuple(1)
+inst3 = make_inst_tuple(2)
+inst4 = make_inst_tuple(3)
+inst5 = make_inst_tuple(4)
+inst6 = make_inst_tuple(5)
 
 #이중 for loop을 사용해 화면에 배치할 8*4 비트 버튼을 생성해서 버튼 딕셔너리에 삽입 
-button_number = 0
-for x in range(182, 1142, 120):
-    for y in range(535, 885, 90):
-        if button_number in inst1:
-            off_color = green_off
-            on_color = green
-        elif button_number in inst2:
-            off_color = red_off
-            on_color = red
-        elif button_number in inst3:
-            off_color = blue_off
-            on_color = blue
-        elif button_number in inst4:
-            off_color = yellow_off
-            on_color = yellow
-        else:
-            off_color = grey_off
-            on_color = grey
+def draw_beat_button(start_btn_number, start_x, start_y):
+    button_number = start_btn_number
 
-        button_dict['button%s' % button_number] = button('', x, y, 110, 80, False, off_color, on_color, 0)
-        border_dict['border%s' % button_number] = button('', x, y, 110, 80, False, white, white, 2)
-        button_number += 1
+    for x in range(start_x, start_x + 72*4, 72):
+        for y in range(start_y, start_y + 44*6, 44):
+            if button_number in inst1:
+                off_color = green_off
+                on_color = green
+            elif button_number in inst2:
+                off_color = red_off
+                on_color = red
+            elif button_number in inst3:
+                off_color = blue_off
+                on_color = blue
+            elif button_number in inst4:
+                off_color = yellow_off
+                on_color = yellow
+            else:
+                off_color = grey_off
+                on_color = grey
+
+            button_dict['button%s' % button_number] = button('', x, y, 70, 40, False, off_color, on_color, 0)
+            border_dict['border%s' % button_number] = button('', x, y, 70, 40, False, white, white, 2)
+            button_number += 1
+
+draw_beat_button(0, 104, 524)
+draw_beat_button(24, 400, 524)
+draw_beat_button(48, 696, 524)
+draw_beat_button(72, 992, 524)
 
 #각종 조작 버튼을 생성하고 딕셔너리에 삽입(start, clear, tempo 등등)
-button_dict['start_button'] = button('RUN', 50, 915, 120, 70, False, grey_off, white, 0)
-button_dict['Clear'] = button('CLEAR', 180, 915, 120, 70, False, grey_off, white, 0)
-button_dict['4'] = button('1/4', 310, 915, 120, 70, False, grey_off, white, 0)
-button_dict['8'] = button('1/8', 440, 915, 120, 70, False, grey_off, white, 0)
-button_dict['16'] = button('1/16', 570, 915, 120, 70, False, grey_off, white, 0)
-button_dict['32'] = button('1/32', 700, 915, 120, 70, False, grey_off, white, 0)
+button_dict['start_button'] = button('RUN', 16, 464 - 44*0, 70, 40, False, grey_off, white, 0, 20)
+button_dict['Clear'] = button('CLEAR', 16, 464 - 44*1, 70, 40, False, grey_off, white, 0, 20)
+button_dict['4'] = button('1/4', 16, 464 - 44*2, 70, 40, False, grey_off, white, 0, 20)
+button_dict['8'] = button('1/8', 16, 464 - 44*3, 70, 40, False, grey_off, white, 0, 20)
+button_dict['16'] = button('1/16', 16, 464 - 44*4, 70, 40, False, grey_off, white, 0, 20)
+button_dict['32'] = button('1/32', 16, 464 - 44*5, 70, 40, False, grey_off, white, 0, 20)
 
 #버튼 생성 파트 끝#
 #############
@@ -178,10 +191,10 @@ sample_dict = {}
 #음악샘플 딕셔너리의 key를 비트 버튼 번호로 설정하고 해당 key에 음악파일 배정(예: button4에 sample0 배정)
 #for loop을 사용해 inst1 -> sample0, inst2 -> sample1, inst3 -> sample2, inst4 -> sample3 배정
 sample_num = 0
-for s in range(0, 32):
+for s in range(0, 96):
     sample_dict['button%s' % s] = sample('sample%s.wav' % sample_num)
     sample_num += 1
-    if sample_num > 3:
+    if sample_num > 5:
         sample_num = 0
 
 #음악파일 생성 파트 끝#
@@ -193,17 +206,19 @@ for s in range(0, 32):
 
 #cetered text 클래스 속성: text, font_size, font_color, x,y,w,h, color, border = 0
 label_dict = {}
-label_dict['COW-BELL'] =  CenteredText('COW-BELL', 14, green, 50, 535, 120, 80, bg_sub, 0)
-label_dict['HIGH-HAT'] = CenteredText('HIGH-HAT', 14, red, 50, 625, 120, 80, bg_sub, 0)
-label_dict['SNARE'] = CenteredText('SNARE', 14, blue, 50, 715, 120, 80, bg_sub, 0)
-label_dict['KICK'] = CenteredText('KICK', 14, yellow, 50, 805, 120, 80, bg_sub, 0)
+label_dict['COW-BELL'] =  CenteredText('COW-BELL', 14, green, 16, 524 + 44*0, 70, 40, bg_sub, 0)
+label_dict['HIGH-HAT'] = CenteredText('HIGH-HAT', 14, red, 16, 524 + 44*1, 70, 40, bg_sub, 0)
+label_dict['SNARE'] = CenteredText('SNARE', 14, blue, 16, 524 + 44*2, 70, 40, bg_sub, 0)
+label_dict['KICK'] = CenteredText('KICK', 14, yellow, 16, 524 + 44*3, 70, 40, bg_sub, 0)
+label_dict['SNARE1'] = CenteredText('SNARE', 14, blue, 16, 524 + 44*4, 70, 40, bg_sub, 0)
+label_dict['KICK1'] = CenteredText('KICK', 14, yellow, 16, 524 + 44*5, 70, 40, bg_sub, 0)
 
 #텍스트 라벨 파트 끝#
 #############
 
 #화면 하단 조작바 rect 정의
-beat_bar = (0, 520, 1187, 580)
-control_bar = (0,900,1187,100)
+beat_bar = (0, 512, 1300, 288)
+control_bar = (0,0,104,512)
 
 #메인 loop
 def game_loop():
@@ -225,7 +240,7 @@ def game_loop():
     for k in label_dict:
         label_dict[k].draw(screen)
     
-    button_counter_list = [0, 1, 2, 3]    
+    button_counter_list = [0, 1, 2, 3, 4, 5]    
     button_dict['8'].push()
     button_dict['8'].draw(screen)
     sound_queue_dict['8'] = 0
@@ -255,7 +270,7 @@ def game_loop():
           
         #clear버튼이 눌렸을 때 0~31번 버튼 중 눌린 버튼을 검사하고 비활성화시킴. 재생할 음악샘플도 모두 삭제 
         if button_dict['Clear'].is_pushed():
-            for q in range (0, 32):
+            for q in range (0, 96):
                 q_str = (str(q))
                 if button_dict['button%s' % q_str].is_pushed():
                     button_dict['button%s' % q_str].push()
@@ -289,13 +304,13 @@ def game_loop():
 
                     next_counter_list = []
                     for x in button_counter_list:
-                         x += 4
+                         x += 6
                          next_counter_list.append(x)
                     button_counter_list = next_counter_list
-                    if button_counter_list[0] > 31:
-                         button_counter_list = [0, 1, 2, 3]   
+                    if button_counter_list[0] > 95:
+                         button_counter_list = [0, 1, 2, 3, 4, 5]   
                 else:
-                    button_counter_list = [0, 1, 2, 3]
+                    button_counter_list = [0, 1, 2, 3, 4, 5]
             
             #마우스 이벤트
             if event.type == pygame.MOUSEBUTTONDOWN:
