@@ -25,6 +25,12 @@ blue = Color('#00D8B9')
 yellow_off = Color('#7F8000')
 yellow = Color('#FEFF00')
 
+orange_off = Color('#804F00')
+orange = Color('#FF9D00')
+
+purple_off = Color('#480080')
+purple = Color('#8F00FF')
+
 bg = Color('#161616')
 bg_sub = Color('#282828')
 
@@ -157,6 +163,12 @@ def draw_beat_button(start_btn_number, start_x, start_y):
             elif button_number in inst4:
                 off_color = yellow_off
                 on_color = yellow
+            elif button_number in inst5:
+                off_color = orange_off
+                on_color = orange
+            elif button_number in inst6:
+                off_color = purple_off
+                on_color = purple
             else:
                 off_color = grey_off
                 on_color = grey
@@ -206,12 +218,12 @@ for s in range(0, 96):
 
 #cetered text 클래스 속성: text, font_size, font_color, x,y,w,h, color, border = 0
 label_dict = {}
-label_dict['COW-BELL'] =  CenteredText('COW-BELL', 14, green, 16, 524 + 44*0, 70, 40, bg_sub, 0)
-label_dict['HIGH-HAT'] = CenteredText('HIGH-HAT', 14, red, 16, 524 + 44*1, 70, 40, bg_sub, 0)
-label_dict['SNARE'] = CenteredText('SNARE', 14, blue, 16, 524 + 44*2, 70, 40, bg_sub, 0)
-label_dict['KICK'] = CenteredText('KICK', 14, yellow, 16, 524 + 44*3, 70, 40, bg_sub, 0)
-label_dict['SNARE1'] = CenteredText('SNARE', 14, blue, 16, 524 + 44*4, 70, 40, bg_sub, 0)
-label_dict['KICK1'] = CenteredText('KICK', 14, yellow, 16, 524 + 44*5, 70, 40, bg_sub, 0)
+label_dict['KICK'] =  CenteredText('KICK', 14, green, 16, 524 + 44*0, 70, 40, bg_sub, 0)
+label_dict['SNARE'] = CenteredText('SNARE', 14, red, 16, 524 + 44*1, 70, 40, bg_sub, 0)
+label_dict['HIGH-HAT'] = CenteredText('HIGH-HAT', 14, blue, 16, 524 + 44*2, 70, 40, bg_sub, 0)
+label_dict['CLAP'] = CenteredText('CLAP', 14, yellow, 16, 524 + 44*3, 70, 40, bg_sub, 0)
+label_dict['SHAKE'] = CenteredText('SHAKE', 14, orange, 16, 524 + 44*4, 70, 40, bg_sub, 0)
+label_dict['COW-BELL'] = CenteredText('COW-BELL', 14, purple, 16, 524 + 44*5, 70, 40, bg_sub, 0)
 
 #텍스트 라벨 파트 끝#
 #############
