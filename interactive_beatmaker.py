@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pygame
+import pygame, random, math
 from pygame.locals import *
 
 pygame.mixer.pre_init(44100, -16, 1, 512) # changes sample rate and buffersize
@@ -36,6 +36,7 @@ bg_sub = Color('#282828')
 
 screen = pygame.display.set_mode((1300, 800))
 clock = pygame.time.Clock()
+
 
 
 #버튼 클래스
@@ -122,8 +123,42 @@ class sample(object):
         self.file = pygame.mixer.Sound(file)
     
     def play_sound(self):
-        self.file.play()        
+        self.file.play()     
 
+
+#그래픽 클래스
+class Pulse(pygame.sprite.Sprite):
+    def __init__(self, rect, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([rect.width, rect.height])
+        self.rect = rect
+        self.color = color
+        self.radius = 0
+        self.thickness = 1
+
+        self.delta = 4
+
+    def speedUp(self, delta):
+        self.delta += delta
+
+    def speedDown(self, delta):
+        self.delta -= delta
+
+    def changeColor(self, color):
+        self.color = color
+
+    def changeThickness(self, thickness):
+        self.thickness = thickness
+
+    def update(self):
+        self.radius += self.delta
+        pygame.draw.circle(screen, self.color, self.rect.center, self.radius, self.thickness)
+
+        if(self.radius > 300):
+            self.kill()
+
+pulses = pygame.sprite.Group()
+colorTypes = (red, blue, green, yellow, orange, purple)
 
 #############
 #버튼 생성 파트#
@@ -235,7 +270,7 @@ control_bar = (0,0,104,512)
 #메인 loop
 def game_loop():
     
-    screen.fill((black))
+    screen.fill(black)
     #draw beat bar
     pygame.draw.rect(screen, bg, beat_bar)
     #draw control bar
@@ -307,12 +342,37 @@ def game_loop():
                 if button_dict['start_button'].is_pushed():
                     for x in button_counter_list:
                         x_str = str(x)
-                        border_dict['border%s' % x_str].draw(screen)                    
+                        border_dict['border%s' % x_str].draw(screen)   
+
+                    pushed = []                     
                     for w in button_counter_list:
                         w_str = str(w)
                         button_str = 'button' + w_str
                         if button_str in sound_queue_dict:
                             sample_dict[button_str].play_sound()
+                        if button_dict[button_str].is_pushed():
+                            pushed.append(w)
+
+                    for i in pushed:
+                        if i % 6 == 0:
+                            pulses.add(Pulse(Rect(random.randint(200,1300),random.randint(0,400),0,0), red))
+                        elif i % 6 == 1:
+                            for pulse in pulses:
+                                pulse.speedUp(random.randint(4,8))
+                        elif i % 6 == 2:
+                            for pulse in pulses:
+                                pulse.speedDown(random.randint(4,8))
+                        elif i % 6 == 3:
+                            for pulse in pulses:
+                                pulse.changeThickness(random.randint(1,10))
+                        elif i % 6 == 4:
+                            for pulse in pulses:
+                                pulseColor = random.choice(colorTypes)
+                                pulse.changeColor(pulseColor)
+                        elif i % 6 == 5:
+                            for pulse in pulses:
+                                pulse.speedUp(random.randint(4,8))
+                        
 
                     next_counter_list = []
                     for x in button_counter_list:
@@ -347,7 +407,9 @@ def game_loop():
                         change_timer = True
                         beats_per_bar_list_copy = ['4', '8', '16', '32']
 
-        pygame.display.flip()
+        pulses.draw(screen)
+        pulses.update()
+        pygame.display.update()
         clock.tick(60)
 
 game_loop()
