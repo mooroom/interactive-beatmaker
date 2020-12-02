@@ -154,7 +154,7 @@ class Pulse(pygame.sprite.Sprite):
         self.radius += self.delta
         pygame.draw.circle(screen, self.color, self.rect.center, self.radius, self.thickness)
 
-        if(self.radius > 300):
+        if(self.radius > 60):
             self.kill()
 
 pulses = pygame.sprite.Group()
@@ -355,7 +355,7 @@ def game_loop():
 
                     for i in pushed:
                         if i % 6 == 0:
-                            pulses.add(Pulse(Rect(random.randint(200,1300),random.randint(0,400),0,0), red))
+                            pulses.add(Pulse(Rect(random.randint(170,1240),random.randint(60,450),0,0), red))
                         elif i % 6 == 1:
                             for pulse in pulses:
                                 pulse.speedUp(random.randint(4,8))
@@ -407,9 +407,9 @@ def game_loop():
                         change_timer = True
                         beats_per_bar_list_copy = ['4', '8', '16', '32']
 
-        pulses.draw(screen)
+        pygame.draw.rect(screen, black, (104,0,1196,512))
         pulses.update()
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
 
 game_loop()

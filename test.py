@@ -93,7 +93,7 @@ def game_loop():
 
         screen.fill(black)
         
-        pulses.draw(screen)
+        # pulses.draw(screen)
         pulses.update()
         # pygame.draw.rect(screen, green, graphic_display)
         pygame.display.update()
