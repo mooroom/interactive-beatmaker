@@ -40,9 +40,9 @@ clock = pygame.time.Clock()
 
 
 #버튼 클래스
-class button(object):
-
+class button(pygame.sprite.Sprite):
     def __init__(self, text, x,y,w,h, pushed, color0, color1, border = 0, border_radius = 5):
+        pygame.sprite.Sprite.__init__(self)
         self.x, self.y, self.w, self.h = x, y, w, h
         # x, y is coords of top left position of rectangle, and w, h, is width height of rect.
         self.pushed = pushed
@@ -59,15 +59,6 @@ class button(object):
         xoffset = (self.w-width) // 2
         yoffset = (self.h-height) // 2
         self.coords = self.x + xoffset, self.y + yoffset
-
-    def draw(self, screen):        
-        Rect = (self.x, self.y, self.w, self.h)
-        if self.pushed:
-            pygame.draw.rect(screen, self.color1, Rect, self.border, self.border_radius)
-            screen.blit(self.txt, self.coords)
-        else:
-            pygame.draw.rect(screen, self.color0, Rect, self.border, self.border_radius)
-            screen.blit(self.txt, self.coords)
         
     def push(self):
         if self.pushed == False:
@@ -81,6 +72,24 @@ class button(object):
         
     def button_rect(self): 
         return self.Return_rect
+
+    def draw(self, screen):        
+        Rect = (self.x, self.y, self.w, self.h)
+        if self.pushed:
+            pygame.draw.rect(screen, self.color1, Rect, self.border, self.border_radius)
+            screen.blit(self.txt, self.coords)
+        else:
+            pygame.draw.rect(screen, self.color0, Rect, self.border, self.border_radius)
+            screen.blit(self.txt, self.coords)
+
+    def update(self):        
+        Rect = (self.x, self.y, self.w, self.h)
+        if self.pushed:
+            pygame.draw.rect(screen, self.color1, Rect, self.border, self.border_radius)
+            screen.blit(self.txt, self.coords)
+        else:
+            pygame.draw.rect(screen, self.color0, Rect, self.border, self.border_radius)
+            screen.blit(self.txt, self.coords)
 
 
 #텍스트 박스 클래스(텍스트 넣으면 중앙정렬해줌)
@@ -154,11 +163,21 @@ class Pulse(pygame.sprite.Sprite):
         self.radius += self.delta
         pygame.draw.circle(screen, self.color, self.rect.center, self.radius, self.thickness)
 
-        if(self.radius > 60):
+        if(self.radius > 500):
             self.kill()
 
-pulses = pygame.sprite.Group()
 colorTypes = (red, blue, green, yellow, orange, purple)
+
+#아이콘 클래스
+class Icon(pygame.sprite.Sprite):
+    def __init__(self, image, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image)
+        self.rect = self.image.get_rect()
+        self.position = position
+
+    def update(self):
+        self.rect.center = self.position
 
 #############
 #버튼 생성 파트#
@@ -278,6 +297,23 @@ def game_loop():
     
     #재생될 음악샘플이 들어오고 나가는 딕셔너리
     sound_queue_dict = {}
+
+    pulses = pygame.sprite.Group()
+    static_buttons = pygame.sprite.Group()
+    activated_buttons = pygame.sprite.Group()
+    deactivated_buttons = pygame.sprite.Group()
+    played_buttons = pygame.sprite.Group()
+
+    icons = [
+        Icon('1.png', (52,544 + 44*0)),
+        Icon('2.png', (52,544 + 44*1)), 
+        Icon('3.png', (52,544 + 44*2)),
+        Icon('4.png', (52,544 + 44*3)),
+        Icon('5.png', (52,544 + 44*4)),
+        Icon('6.png', (52,544 + 44*5))
+    ]
+
+    static_icons = pygame.sprite.RenderPlain(*icons)
     
     #딕셔너리에 저장된 모든 버튼을 그린다
     for k in button_dict:
@@ -286,6 +322,9 @@ def game_loop():
     #딕셔너리에 저장된 모든 텍스트 라벨을 그린다
     for k in label_dict:
         label_dict[k].draw(screen)
+
+    static_icons.update()
+    static_icons.draw(screen)
     
     button_counter_list = [0, 1, 2, 3, 4, 5]    
     button_dict['8'].push()
@@ -303,7 +342,7 @@ def game_loop():
          
         #마우스 위치 추적 변수
         mouse_pos = pygame.mouse.get_pos()
-        
+
         #4, 8, 16, 32박 버튼 중 눌린 것을 검사해서 타이머 설정(템포 조절하는 곳)
         if change_timer:
             for x in beats_per_bar_list:
@@ -337,12 +376,16 @@ def game_loop():
             if event.type == pygame.USEREVENT:  #timer
                 
                 for k in button_dict:
-                    button_dict[k].draw(screen)
+                    # button_dict[k].draw(screen)
+                    static_buttons.add(button_dict[k])
                 
                 if button_dict['start_button'].is_pushed():
+                    temp = pygame.sprite.Group()
                     for x in button_counter_list:
                         x_str = str(x)
-                        border_dict['border%s' % x_str].draw(screen)   
+                        # border_dict['border%s' % x_str].draw(screen) 
+                        temp.add(border_dict['border%s' % x_str])  
+                    played_buttons = temp
 
                     pushed = []                     
                     for w in button_counter_list:
@@ -390,7 +433,8 @@ def game_loop():
                 for k in button_dict:
                     if button_dict[k].button_rect().collidepoint(mouse_pos):
                         button_dict[k].push()
-                        button_dict[k].draw(screen)
+                        # button_dict[k].draw(screen)
+                        activated_buttons.add(button_dict[k])
                         if button_dict[k].is_pushed():
                             sound_queue_dict[k] = 0
                         else:
@@ -407,8 +451,15 @@ def game_loop():
                         change_timer = True
                         beats_per_bar_list_copy = ['4', '8', '16', '32']
 
-        pygame.draw.rect(screen, black, (104,0,1196,512))
+        screen.fill(black)
         pulses.update()
+        static_icons.update()
+        static_icons.draw(screen)
+        static_buttons.update()
+        activated_buttons.update()
+        played_buttons.update()
+        
+        
         pygame.display.update()
         clock.tick(30)
 
