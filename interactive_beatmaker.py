@@ -38,7 +38,6 @@ screen = pygame.display.set_mode((1300, 800))
 clock = pygame.time.Clock()
 
 
-
 #버튼 클래스
 class button(pygame.sprite.Sprite):
     def __init__(self, text, x,y,w,h, pushed, color0, color1, border = 0, border_radius = 5):
@@ -92,38 +91,6 @@ class button(pygame.sprite.Sprite):
             screen.blit(self.txt, self.coords)
 
 
-#텍스트 박스 클래스(텍스트 넣으면 중앙정렬해줌)
-class CenteredText(object):
-
-    def __init__(self, text, font_size, font_color, x,y,w,h, color, border = 0):
-        self.x, self.y, self.w, self.h = x, y, w, h
-        # x, y is coords of top left position of rectangle, and w, h, is width height of rect
-        self.border = border  # if border = 0 then rectangle is filled, 1 is not filled
-        self.color = color
-        self.font_size = font_size
-        self.font_color = font_color
-        font = pygame.font.SysFont("arial", self.font_size)
-        width, height = font.size(text)
-        xoffset = (self.w-width) // 2
-        yoffset = (self.h-height) // 2
-        self.coords = self.x + xoffset, self.y + yoffset
-        self.txt = font.render(text, True, self.font_color)
-        
-        
-    def draw(self, screen):        
-        Rect = (self.x, self.y, self.w, self.h)
-        pygame.draw.rect(screen, self.color, Rect, self.border)
-        screen.blit(self.txt, self.coords)
-        
-    def get_border_rect(self):
-        Rect1 = (self.x, self.y, self.w, self.h)
-        R = pygame.draw.rect(screen, (0, 0, 0), Rect1, self.border)
-        return R
-    
-    def get_text(self):
-        return self.text
-
-
 #음악 샘플 클래스(음악 파일을 import 하고 재생)
 class sample(object):
     '''sample class plays an audio file 
@@ -135,7 +102,7 @@ class sample(object):
         self.file.play()     
 
 
-#그래픽 클래스
+#펄스 그래픽 클래스
 class Pulse(pygame.sprite.Sprite):
     def __init__(self, rect, color):
         pygame.sprite.Sprite.__init__(self)
@@ -166,7 +133,6 @@ class Pulse(pygame.sprite.Sprite):
         if(self.radius > 500):
             self.kill()
 
-colorTypes = (red, blue, green, yellow, orange, purple)
 
 #아이콘 클래스
 class Icon(pygame.sprite.Sprite):
@@ -179,8 +145,6 @@ class Icon(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = self.position
 
-#############
-#버튼 생성 파트#
 
 #각종 버튼 딕셔너리(생성한 버튼들을 넣어두고 gameloop이 돌때 꺼내 씀)
 button_dict = {}
@@ -236,6 +200,7 @@ draw_beat_button(24, 400, 524)
 draw_beat_button(48, 696, 524)
 draw_beat_button(72, 992, 524)
 
+
 #각종 조작 버튼을 생성하고 딕셔너리에 삽입(start, clear, tempo 등등)
 button_dict['start_button'] = button('RUN', 16, 464 - 44*0, 70, 40, False, grey_off, white, 0, 20)
 button_dict['Clear'] = button('CLEAR', 16, 464 - 44*1, 70, 40, False, grey_off, white, 0, 20)
@@ -244,18 +209,10 @@ button_dict['8'] = button('1/8', 16, 464 - 44*3, 70, 40, False, grey_off, white,
 button_dict['16'] = button('1/16', 16, 464 - 44*4, 70, 40, False, grey_off, white, 0, 20)
 button_dict['32'] = button('1/32', 16, 464 - 44*5, 70, 40, False, grey_off, white, 0, 20)
 
-#버튼 생성 파트 끝#
-#############
-
-
-#############
-#음악파일 생성 파트 시작#
 
 #음악샘플 딕셔너리 생성
 sample_dict = {}
 
-#음악샘플 딕셔너리의 key를 비트 버튼 번호로 설정하고 해당 key에 음악파일 배정(예: button4에 sample0 배정)
-#for loop을 사용해 inst1 -> sample0, inst2 -> sample1, inst3 -> sample2, inst4 -> sample3 배정
 sample_num = 0
 for s in range(0, 96):
     sample_dict['button%s' % s] = sample('sample%s.wav' % sample_num)
@@ -263,45 +220,18 @@ for s in range(0, 96):
     if sample_num > 5:
         sample_num = 0
 
-#음악파일 생성 파트 끝#
-#############
-
-
-#############
-#텍스트 라벨 파트 시작#
-
-#cetered text 클래스 속성: text, font_size, font_color, x,y,w,h, color, border = 0
-label_dict = {}
-label_dict['KICK'] =  CenteredText('KICK', 14, green, 16, 524 + 44*0, 70, 40, bg_sub, 0)
-label_dict['SNARE'] = CenteredText('SNARE', 14, red, 16, 524 + 44*1, 70, 40, bg_sub, 0)
-label_dict['HIGH-HAT'] = CenteredText('HIGH-HAT', 14, blue, 16, 524 + 44*2, 70, 40, bg_sub, 0)
-label_dict['CLAP'] = CenteredText('CLAP', 14, yellow, 16, 524 + 44*3, 70, 40, bg_sub, 0)
-label_dict['SHAKE'] = CenteredText('SHAKE', 14, orange, 16, 524 + 44*4, 70, 40, bg_sub, 0)
-label_dict['COW-BELL'] = CenteredText('COW-BELL', 14, purple, 16, 524 + 44*5, 70, 40, bg_sub, 0)
-
-#텍스트 라벨 파트 끝#
-#############
-
-#화면 하단 조작바 rect 정의
-beat_bar = (0, 512, 1300, 288)
-control_bar = (0,0,104,512)
 
 #메인 loop
 def game_loop():
     
     screen.fill(black)
-    #draw beat bar
-    pygame.draw.rect(screen, bg, beat_bar)
-    #draw control bar
-    pygame.draw.rect(screen, light_grey, control_bar)
     
     #재생될 음악샘플이 들어오고 나가는 딕셔너리
     sound_queue_dict = {}
 
     pulses = pygame.sprite.Group()
     static_buttons = pygame.sprite.Group()
-    activated_buttons = pygame.sprite.Group()
-    deactivated_buttons = pygame.sprite.Group()
+    toggled_buttons = pygame.sprite.Group()
     played_buttons = pygame.sprite.Group()
 
     icons = [
@@ -314,17 +244,8 @@ def game_loop():
     ]
 
     static_icons = pygame.sprite.RenderPlain(*icons)
-    
-    #딕셔너리에 저장된 모든 버튼을 그린다
-    for k in button_dict:
-         button_dict[k].draw(screen)
 
-    #딕셔너리에 저장된 모든 텍스트 라벨을 그린다
-    for k in label_dict:
-        label_dict[k].draw(screen)
-
-    static_icons.update()
-    static_icons.draw(screen)
+    colorTypes = (red, blue, green, yellow, orange, purple)
     
     button_counter_list = [0, 1, 2, 3, 4, 5]    
     button_dict['8'].push()
@@ -434,7 +355,7 @@ def game_loop():
                     if button_dict[k].button_rect().collidepoint(mouse_pos):
                         button_dict[k].push()
                         # button_dict[k].draw(screen)
-                        activated_buttons.add(button_dict[k])
+                        toggled_buttons.add(button_dict[k])
                         if button_dict[k].is_pushed():
                             sound_queue_dict[k] = 0
                         else:
@@ -456,7 +377,7 @@ def game_loop():
         static_icons.update()
         static_icons.draw(screen)
         static_buttons.update()
-        activated_buttons.update()
+        toggled_buttons.update()
         played_buttons.update()
         
         
