@@ -204,8 +204,13 @@ draw_beat_button(72, 992, 524)
 #각종 조작 버튼을 생성하고 딕셔너리에 삽입(start, clear, tempo 등등)
 button_dict['start_button'] = button('RUN', 16, 464 - 44*0, 70, 40, False, grey_off, white, 0, 20)
 button_dict['Clear'] = button('CLEAR', 16, 464 - 44*1, 70, 40, False, grey_off, white, 0, 20)
+
 button_dict['8'] = button('1/8', 16, 464 - 44*3, 70, 40, False, grey_off, white, 0, 20)
 button_dict['16'] = button('1/16', 16, 464 - 44*4, 70, 40, False, grey_off, white, 0, 20)
+
+button_dict['A'] = button('A', 16, 464 - 44*6, 70, 40, False, grey_off, white, 0, 20)
+button_dict['B'] = button('B', 16, 464 - 44*7, 70, 40, False, grey_off, white, 0, 20)
+button_dict['C'] = button('C', 16, 464 - 44*8, 70, 40, False, grey_off, white, 0, 20)
 
 
 #음악샘플 딕셔너리 생성
@@ -242,6 +247,7 @@ def game_loop():
     ]
 
     static_icons = pygame.sprite.RenderPlain(*icons)
+    static_icons.update()
 
     colorTypes = (red, blue, green, yellow, orange, purple)
     
@@ -252,13 +258,19 @@ def game_loop():
     beats_per_bar_list =  ['8', '16']
     beats_per_bar_list_copy = ['8', '16']
 
+    button_dict['A'].push()
+    button_dict['A'].draw(screen)
+    theme_type_list = ['A', 'B', 'C']
+    theme_type_list_copy = ['A', 'B', 'C']
+
     BPM = 120
     BPM_text = '128'
     BPM_text2 = ''
     change_timer = True   
+
     
     while True: # game loop
-         
+
         #마우스 위치 추적 변수
         mouse_pos = pygame.mouse.get_pos()
 
@@ -284,15 +296,18 @@ def game_loop():
                         del sound_queue_dict['button%s' % q_str]
             button_dict['Clear'].push()
             button_dict['Clear'].draw(screen)
+            button_dict['start_button'].push()
+            pulses.empty()
+
             
         #각종 이벤트 발생 추적 loop
         for event in pygame.event.get():  
-            if event.type == pygame.QUIT:   #allows for user to quit
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 return  
             
             #타이머 이벤트
-            if event.type == pygame.USEREVENT:  #timer
+            if event.type == pygame.USEREVENT:
                 
                 for k in button_dict:
                     # button_dict[k].draw(screen)
@@ -315,25 +330,50 @@ def game_loop():
                         if button_dict[button_str].is_pushed():
                             pushed.append(w)
 
-                    for i in pushed:
-                        if i % 6 == 0:
-                            pulses.add(Pulse(Rect(random.randint(170,1240),random.randint(60,450),0,0), red))
-                        elif i % 6 == 1:
-                            for pulse in pulses:
-                                pulse.speedUp(random.randint(4,8))
-                        elif i % 6 == 2:
-                            for pulse in pulses:
-                                pulse.speedDown(random.randint(4,8))
-                        elif i % 6 == 3:
-                            for pulse in pulses:
-                                pulse.changeThickness(random.randint(1,10))
-                        elif i % 6 == 4:
-                            for pulse in pulses:
-                                pulseColor = random.choice(colorTypes)
-                                pulse.changeColor(pulseColor)
-                        elif i % 6 == 5:
-                            for pulse in pulses:
-                                pulse.speedUp(random.randint(4,8))
+                    if button_dict['A'].is_pushed():
+                        for i in pushed:
+                            if i % 6 == 0:
+                                pulses.add(Pulse(Rect(random.randint(0,1300),random.randint(0,450),0,0), red))
+                            elif i % 6 == 1:
+                                for pulse in pulses:
+                                    pulse.speedUp(random.randint(4,8))
+                            elif i % 6 == 2:
+                                for pulse in pulses:
+                                    pulse.speedDown(random.randint(4,8))
+                            elif i % 6 == 3:
+                                for pulse in pulses:
+                                    pulse.changeThickness(random.randint(1,10))
+                            elif i % 6 == 4:
+                                for pulse in pulses:
+                                    pulseColor = random.choice(colorTypes)
+                                    pulse.changeColor(pulseColor)
+                            elif i % 6 == 5:
+                                for pulse in pulses:
+                                    pulse.speedUp(random.randint(4,8))
+
+                    if button_dict['B'].is_pushed():
+                        for i in pushed:
+                            if i % 6 == 0:
+                                pulses.add(Pulse(Rect(650,250,0,0), red))
+                            elif i % 6 == 1:
+                                for pulse in pulses:
+                                    pulse.speedUp(random.randint(4,8))
+                            elif i % 6 == 2:
+                                for pulse in pulses:
+                                    pulse.speedDown(random.randint(4,8))
+                            elif i % 6 == 3:
+                                for pulse in pulses:
+                                    pulse.changeThickness(random.randint(1,10))
+                            elif i % 6 == 4:
+                                for pulse in pulses:
+                                    pulseColor = random.choice(colorTypes)
+                                    pulse.changeColor(pulseColor)
+                            elif i % 6 == 5:
+                                for pulse in pulses:
+                                    pulse.speedUp(random.randint(4,8))
+
+                    # if button_dict['C'].is_pushed():
+                    # 여기에 type C 그래픽을 구현하면 된다!!
                         
 
                     next_counter_list = []
@@ -345,9 +385,12 @@ def game_loop():
                          button_counter_list = [0, 1, 2, 3, 4, 5]   
                 else:
                     button_counter_list = [0, 1, 2, 3, 4, 5]
-            
+                    played_buttons.empty()
+                
             #마우스 이벤트
             if event.type == pygame.MOUSEBUTTONDOWN:
+                
+
                 #누른 버튼을 활성화/비활성화, sound 딕셔너리에도 추가/삭제
                 for k in button_dict:
                     if button_dict[k].button_rect().collidepoint(mouse_pos):
@@ -359,7 +402,16 @@ def game_loop():
                         else:
                             del sound_queue_dict[k]    
 
-                #템포조절 버튼 4, 6, 16, 32 중 택1
+                for s in theme_type_list:
+                    if button_dict[s].button_rect().collidepoint(mouse_pos):
+                        theme_type_list_copy.remove(s)
+                        for t in theme_type_list_copy:
+                            if button_dict[t].is_pushed():
+                                button_dict[t].push()
+                                button_dict[t].draw(screen)
+                        theme_type_list_copy = ['A', 'B', 'C']
+
+                #템포조절 버튼 6, 16 중 택1
                 for i in beats_per_bar_list:
                     if button_dict[i].button_rect().collidepoint(mouse_pos):
                         beats_per_bar_list_copy.remove(i)
@@ -370,9 +422,10 @@ def game_loop():
                         change_timer = True
                         beats_per_bar_list_copy = ['8', '16']
 
+                
+
         screen.fill(black)
         pulses.update()
-        static_icons.update()
         static_icons.draw(screen)
         static_buttons.update()
         toggled_buttons.update()
