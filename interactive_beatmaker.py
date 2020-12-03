@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pygame, random, math
 from pygame.locals import *
+from random import randint
 
 pygame.mixer.pre_init(44100, -16, 1, 512) # changes sample rate and buffersize
 pygame.init()
@@ -10,7 +11,7 @@ white = (255, 255, 255, 50)
 black = (0, 0, 0)
 light_grey = Color('#606060')
 
-grey_off = Color('#212121')
+grey_off = Color('#3C3C3C')
 grey = Color('#424242')
 
 green_off = Color('#417015')
@@ -204,6 +205,8 @@ draw_beat_button(72, 992, 524)
 #각종 조작 버튼을 생성하고 딕셔너리에 삽입(start, clear, tempo 등등)
 button_dict['start_button'] = button('RUN', 16, 464 - 44*0, 70, 40, False, grey_off, white, 0, 20)
 button_dict['Clear'] = button('CLEAR', 16, 464 - 44*1, 70, 40, False, grey_off, white, 0, 20)
+button_dict['randomize'] = button('Rand0m1ze!', 16, 464 - 44*2, 70, 40, False, grey_off, white, 0, 20)
+
 
 button_dict['8'] = button('1/8', 16, 464 - 44*3, 70, 40, False, grey_off, white, 0, 20)
 button_dict['16'] = button('1/16', 16, 464 - 44*4, 70, 40, False, grey_off, white, 0, 20)
@@ -252,9 +255,9 @@ def game_loop():
     colorTypes = (red, blue, green, yellow, orange, purple)
     
     button_counter_list = [0, 1, 2, 3, 4, 5]    
-    button_dict['8'].push()
-    button_dict['8'].draw(screen)
-    sound_queue_dict['8'] = 0
+    button_dict['16'].push()
+    button_dict['16'].draw(screen)
+    sound_queue_dict['16'] = 0
     beats_per_bar_list =  ['8', '16']
     beats_per_bar_list_copy = ['8', '16']
 
@@ -298,6 +301,32 @@ def game_loop():
             button_dict['Clear'].draw(screen)
             button_dict['start_button'].push()
             pulses.empty()
+
+
+        #randomize 버튼이 눌렸을 때 random하게 버튼을 누름
+        if button_dict['randomize'].is_pushed():
+            for q in range (0, 95):
+                q_str = (str(q))
+                if button_dict['button%s' % q_str].is_pushed():
+                    button_dict['button%s' % q_str].push()
+                    button_dict['button%s' % q_str].draw(screen)
+                    if 'button%s' % q_str in sound_queue_dict:
+                        del sound_queue_dict['button%s' % q_str]
+
+            btnmbr = randint(32,36)
+            rndm = random.sample(range(0,95), btnmbr)
+            for q in rndm:
+                q_str = (str(q))
+                button_dict['button%s' % q_str].push()
+                button_dict['button%s' % q_str].draw(screen)
+                if button_dict['button%s' % q_str].is_pushed():
+                    sound_queue_dict['button%s' % q_str] = 0
+                else:
+                    del sound_queue_dict['button%s' % q_str]
+            
+            button_dict['randomize'].push()
+            button_dict['randomize'].draw(screen)
+            
 
             
         #각종 이벤트 발생 추적 loop
