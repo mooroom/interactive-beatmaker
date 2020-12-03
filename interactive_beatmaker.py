@@ -204,10 +204,8 @@ draw_beat_button(72, 992, 524)
 #각종 조작 버튼을 생성하고 딕셔너리에 삽입(start, clear, tempo 등등)
 button_dict['start_button'] = button('RUN', 16, 464 - 44*0, 70, 40, False, grey_off, white, 0, 20)
 button_dict['Clear'] = button('CLEAR', 16, 464 - 44*1, 70, 40, False, grey_off, white, 0, 20)
-button_dict['4'] = button('1/4', 16, 464 - 44*2, 70, 40, False, grey_off, white, 0, 20)
 button_dict['8'] = button('1/8', 16, 464 - 44*3, 70, 40, False, grey_off, white, 0, 20)
 button_dict['16'] = button('1/16', 16, 464 - 44*4, 70, 40, False, grey_off, white, 0, 20)
-button_dict['32'] = button('1/32', 16, 464 - 44*5, 70, 40, False, grey_off, white, 0, 20)
 
 
 #음악샘플 딕셔너리 생성
@@ -251,8 +249,8 @@ def game_loop():
     button_dict['8'].push()
     button_dict['8'].draw(screen)
     sound_queue_dict['8'] = 0
-    beats_per_bar_list =  ['4', '8', '16', '32']
-    beats_per_bar_list_copy = ['4', '8', '16', '32']
+    beats_per_bar_list =  ['8', '16']
+    beats_per_bar_list_copy = ['8', '16']
 
     BPM = 120
     BPM_text = '128'
@@ -370,7 +368,7 @@ def game_loop():
                                 button_dict[l].push()
                                 button_dict[l].draw(screen)
                         change_timer = True
-                        beats_per_bar_list_copy = ['4', '8', '16', '32']
+                        beats_per_bar_list_copy = ['8', '16']
 
         screen.fill(black)
         pulses.update()
