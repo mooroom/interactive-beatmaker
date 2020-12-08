@@ -110,7 +110,7 @@ class Pulse(pygame.sprite.Sprite):
         self.image = pygame.Surface([rect.width, rect.height])
         self.rect = rect
         self.color = color
-        self.radius = 0
+        self.radius = 50
         self.thickness = 1
 
         self.delta = 4
@@ -132,6 +132,39 @@ class Pulse(pygame.sprite.Sprite):
         pygame.draw.circle(screen, self.color, self.rect.center, self.radius, self.thickness)
 
         if(self.radius > 500):
+            self.kill()
+
+
+
+#box 그래픽 클래스
+class Box(pygame.sprite.Sprite):
+    def __init__(self, rect, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([rect.width, rect.height])
+        self.rect = rect
+        self.color = color
+
+        self.deltaX = 0
+        self.deltaY = 0
+
+    def move(self):
+        deltasX = (-8,-4,0,4,8)
+        deltasY = (-8-4,4,8)
+        self.deltaX = random.choice(deltasX)
+        if self.deltaX == 0:
+            self.deltaY = random.choice(deltasY)
+        else:
+            self.deltaY = 0
+
+    def changeColor(self, color):
+        self.color = color
+
+    def update(self):
+        self.rect[0] += self.deltaX
+        self.rect[1] += self.deltaY        
+        pygame.draw.rect(screen, self.color, self.rect)
+
+        if self.rect[0] < 0 or self.rect[0] > 1300 or self.rect[1] < 0 or self.rect[1] > 450:
             self.kill()
 
 
@@ -216,6 +249,7 @@ button_dict['B'] = button('B', 16, 464 - 44*7, 70, 40, False, grey_off, white, 0
 button_dict['C'] = button('C', 16, 464 - 44*8, 70, 40, False, grey_off, white, 0, 20)
 
 
+
 #음악샘플 딕셔너리 생성
 sample_dict = {}
 
@@ -236,6 +270,10 @@ def game_loop():
     sound_queue_dict = {}
 
     pulses = pygame.sprite.Group()
+    pulses2 = pygame.sprite.Group()
+    boxes = pygame.sprite.Group()
+    boxes2 = pygame.sprite.Group()
+    boxes3 = pygame.sprite.Group()
     static_buttons = pygame.sprite.Group()
     toggled_buttons = pygame.sprite.Group()
     played_buttons = pygame.sprite.Group()
@@ -301,6 +339,10 @@ def game_loop():
             button_dict['Clear'].draw(screen)
             button_dict['start_button'].push()
             pulses.empty()
+            pulses2.empty()
+            boxes.empty()
+            boxes2.empty()
+            boxes3.empty()
 
 
         #randomize 버튼이 눌렸을 때 random하게 버튼을 누름
@@ -371,7 +413,7 @@ def game_loop():
                                     pulse.speedDown(random.randint(4,8))
                             elif i % 6 == 3:
                                 for pulse in pulses:
-                                    pulse.changeThickness(random.randint(1,10))
+                                    pulse.changeThickness(random.randint(1,6)*5)
                             elif i % 6 == 4:
                                 for pulse in pulses:
                                     pulseColor = random.choice(colorTypes)
@@ -392,7 +434,7 @@ def game_loop():
                                     pulse.speedDown(random.randint(4,8))
                             elif i % 6 == 3:
                                 for pulse in pulses:
-                                    pulse.changeThickness(random.randint(1,10))
+                                    pulse.changeThickness(random.randint(1,6)*5)
                             elif i % 6 == 4:
                                 for pulse in pulses:
                                     pulseColor = random.choice(colorTypes)
@@ -401,8 +443,65 @@ def game_loop():
                                 for pulse in pulses:
                                     pulse.speedUp(random.randint(4,8))
 
-                    # if button_dict['C'].is_pushed():
-                    # 여기에 type C 그래픽을 구현하면 된다!!
+                    if button_dict['C'].is_pushed():
+                        for i in pushed:
+                            if i % 6 == 0:
+                                boxes.add(Box(Rect(650,225, random.randint(100,150), random.randint(100,150)), grey_off))
+                                for box in boxes:
+                                    box.move()
+                                for box in boxes3:
+                                    box.move()
+
+                            elif i % 6 == 1:
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 4, 4), grey_off))
+                                
+
+                            elif i % 6 == 2:
+                                boxes.add(Box(Rect(random.randint(1,12)*100+50, 225, 10, 50), black))                            
+                                    
+
+                            elif i % 6 == 3:                                
+                                for box in boxes:
+                                    boxColor = random.choice(colorTypes)
+                                    box.changeColor(boxColor)
+                                for box in boxes3:
+                                    boxColor = random.choice(colorTypes)
+                                    box.changeColor(boxColor)
+                                '''    
+                                for pulse in pulses:
+                                    pulseColor = random.choice(colorTypes)
+                                    pulse.changeColor(pulseColor)
+                                '''
+                                
+                            elif i % 6 == 4:
+                                boxes2.add(Box(Rect(0,0,random.randint(1,3)*5,600), black))
+                                for box in boxes2:
+                                    box.deltaX = 5
+                                    box.deltaY = 0
+                                    
+
+                            elif i % 6 == 5:
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 20, 20), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 20, 20), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 20, 20), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 20, 20), grey_off))
+                                boxes3.add(Box(Rect(random.randint(0,1300), random.randint(0,450), 20, 20), grey_off))
+
+
+                                    
+                                          
                         
 
                     next_counter_list = []
@@ -454,7 +553,11 @@ def game_loop():
                 
 
         screen.fill(black)
+        boxes.update()
+        boxes2.update()
+        boxes3.update()
         pulses.update()
+        pulses2.update()
         static_icons.draw(screen)
         static_buttons.update()
         toggled_buttons.update()
